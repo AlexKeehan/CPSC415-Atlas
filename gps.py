@@ -21,7 +21,48 @@ def find_path(atlas, alg):
     of that path.'''
 
     # THIS IS WHERE YOUR AMAZING CODE GOES
+    def MinDist(self, grid, completed):
+        min = ([float('inf')])
+        for x in range(len(grid) - 1):
+            if grid[x] < min and completed[x] == False:
+                min = grid[x]
+                min_index = x
+        return min_index
 
+    if (alg == "Dijkstras"):
+        x = 0
+        y = 0
+        grid = []
+        numgrid = []
+        state = [[]]
+        completed = [[]]
+        shortest = float('inf')
+        ans_state = -1
+        ans = []
+
+        while x <= atlas._num_cities - 1:
+            y = 0
+            while y <= atlas._num_cities - 1:
+                grid.append([Atlas.get_road_dist(atlas, x, y)])
+                numgrid.append([x, y])
+                y = y + 1
+            x = x + 1
+        state = [0,0]
+        x = 0
+        y = 0
+
+        
+        
+        while state[0] != atlas._num_cities:
+            while x <= atlas._num_cities - 1:
+                y = 0
+                while y <= atlas._num_cities - 1:
+                    print(MinDist(atlas, grid, completed))
+                    
+                    y = y + 1
+                ans.append(shortest)
+                x = x + 1
+            state[0] = atlas._num_cities
     # Here's a (bogus) example return value:
     return ([0,3,2,4],970)
 

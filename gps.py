@@ -66,7 +66,7 @@ def find_path(atlas, alg):
         node = [0,0]
         frontier.append(node)
         reached.append(node)
-        
+        queue.append(grid[0][3])
         while not len(frontier) == 0:
             frontier.pop()
             while y < atlas._num_cities:

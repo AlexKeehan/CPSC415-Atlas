@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import heapq
 '''
 CPSC 415 -- Homework #2 template
 Alexander Keehan, University of Mary Washington, Fall 2023
@@ -21,24 +21,23 @@ def find_path(atlas, alg):
     of that path.'''
    # THIS IS WHERE YOUR AMAZING CODE GOES
 
-    queue = []
+    frontier = []
     grid = []
 
     def isEmpty(self):
-        if len(queue) == 0:
+        if len(frontier) == 0:
             return True
         else:
             return False
 
     def delete(self):
         index = 0
-        max_value = 100000
-        for i in range(len(queue)):
-            if queue[i] < max_value:
-                max_value = queue[i]
-                index = i
-        temp = queue[index]
-        del queue[index]
+        max_value = 0
+        for i in range(len(frontier)):
+            if frontier[i] < frontier[max_value]:
+                max_value = i
+        temp = frontier[max_value]
+        del frontier[max_value]
         return temp
 
     
@@ -46,37 +45,82 @@ def find_path(atlas, alg):
     def Grid(self):
         x = 0
         y = 0
-        while x <= atlas._num_cities - 1:
-            y = 0
-            while y <= atlas._num_cities - 1:
-                grid.append([[x,y], Atlas.get_road_dist(atlas, x, y)])
-                y = y + 1
-            x = x + 1
-    if (alg == "Dijkstras"):
+        if (alg == "Dijkstras"):
+            while x <= atlas._num_cities - 1:
+                y = 0
+                while y <= atlas._num_cities - 1:
+                    grid.append([[x,y], Atlas.get_road_dist(atlas, x, y)])
+                    y = y + 1
+                x = x + 1
+
+        if (alg == "greedy"):
+            while x <= atlas._num_cities - 1:
+                y = 0
+                while y <= atlas._num_cities - 1:
+                    grid.append([[x,y], Atlas.get_crow_flies_dist(atlas, x, y)])
+                    y = y + 1
+                x = x + 1
+        if (alg == "A*"):
+            while x <= atlas._num_cities - 1:
+                y = 0
+                while y <= atlas._num_cities - 1:
+                    temp = Atlas.get_road_dist(atlas, x, y) + Atlas.get_crow_flies_dist(atlas, x, y)
+                    grid.append([[x,y], temp])
+                    y = y + 1
+                x = x + 1
+    Grid(grid)
+    print(grid)
+
+
+    if (alg == "greedy"):
         x = 0
-        y = 0
+        y = 1
         reached = [[]]
-        frontier = []
+                
 
-        Grid(grid)
+        #node = [0,0]
+        #frontier.append(node)
+        #reached.append(node)
+        queue = []
+        pos = 0
+        while pos != atlas._num_cities - 1:
+            i = 1
+            while i < atlas._num_cities - 1:
+                queue.append([[pos,i], grid[i][1]])
+                i = i + 1
+            queue.sort(key = lambda x: x[1])
+            print("Queue", queue)
+            counter = 0
+            temp_queue = []
+            while counter < len(queue):
+                dist = Atlas.get_road_dist(atlas, queue[counter][0][0], queue[counter][0][1])
+                if dist != float('Inf') and dist != 0.0:
+                    temp_queue.append([queue[counter][0], dist])
+                    print("Dist", dist)
+                counter = counter + 1
+                queue.pop()
+            queue = temp_queue
+            queue.sort(key = lambda x: x[1])
 
-        print(grid)
-        print(queue)
+            pos = queue[0][0][1]
+                #Atlas.get_road_dist(atlas, 
 
-        node = [0,0]
-        frontier.append(node)
-        reached.append(node)
-        queue.append(grid[0][3])
-        while not len(frontier) == 0:
-            frontier.pop()
-            while y < atlas._num_cities:
-                print(y)
-                print(queue)
-                queue.append(grid[x][y])
-                y = y + 1
-            
-        print("Queue ", queue)
+        #while not len(frontier) == 0:
+       #     delete(frontier)
+           # while x < atlas._num_cities:
+               # frontier.append([grid[x][0], grid[x][y]])
+               # x = x + 1
 
+
+        #for i in frontier:
+                #child = i
+                #if child[0][1] == atlas._num_cities - 1:
+                #    print("Nice", child[0][1])
+                #if child not in reached:
+                #    reached.append(child)
+                #    frontier.append(child)
+        
+        
 
     # Here's a (bogus) example return value:
     return ([0,3,2,4],970)

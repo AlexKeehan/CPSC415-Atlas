@@ -19,50 +19,65 @@ def find_path(atlas, alg):
     starting with 0 and ending with atlas.num_cities-1, that gives the
     optimal path between those two cities. The second is the total cost
     of that path.'''
+   # THIS IS WHERE YOUR AMAZING CODE GOES
 
-    # THIS IS WHERE YOUR AMAZING CODE GOES
-    def MinDist(self, grid, completed):
-        min = ([float('inf')])
-        for x in range(len(grid) - 1):
-            if grid[x] < min and completed[x] == False:
-                min = grid[x]
-                min_index = x
-        return min_index
+    queue = []
+    grid = []
 
-    if (alg == "Dijkstras"):
+    def isEmpty(self):
+        if len(queue) == 0:
+            return True
+        else:
+            return False
+
+    def delete(self):
+        index = 0
+        max_value = 100000
+        for i in range(len(queue)):
+            if queue[i] < max_value:
+                max_value = queue[i]
+                index = i
+        temp = queue[index]
+        del queue[index]
+        return temp
+
+    
+    
+    def Grid(self):
         x = 0
         y = 0
-        grid = []
-        numgrid = []
-        state = [[]]
-        completed = [[]]
-        shortest = float('inf')
-        ans_state = -1
-        ans = []
-
         while x <= atlas._num_cities - 1:
             y = 0
             while y <= atlas._num_cities - 1:
-                grid.append([Atlas.get_road_dist(atlas, x, y)])
-                numgrid.append([x, y])
+                grid.append([[x,y], Atlas.get_road_dist(atlas, x, y)])
                 y = y + 1
             x = x + 1
-        state = [0,0]
+    if (alg == "Dijkstras"):
         x = 0
         y = 0
+        reached = [[]]
+        frontier = []
 
+        Grid(grid)
+
+        print(grid)
+        print(queue)
+
+        node = [0,0]
+        frontier.append(node)
+        reached.append(node)
         
-        
-        while state[0] != atlas._num_cities:
-            while x <= atlas._num_cities - 1:
-                y = 0
-                while y <= atlas._num_cities - 1:
-                    print(MinDist(atlas, grid, completed))
-                    
-                    y = y + 1
-                ans.append(shortest)
-                x = x + 1
-            state[0] = atlas._num_cities
+        while not len(frontier) == 0:
+            frontier.pop()
+            while y < atlas._num_cities:
+                print(y)
+                print(queue)
+                queue.append(grid[x][y])
+                y = y + 1
+            
+        print("Queue ", queue)
+
+
     # Here's a (bogus) example return value:
     return ([0,3,2,4],970)
 

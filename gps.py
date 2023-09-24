@@ -56,8 +56,8 @@ def find_path(atlas, alg):
 
 
     if (alg == "greedy"):
-        #print("Hueristic", Atlas.get_crow_flies_dist(atlas, grid[22][0][0], grid[22][0][1]))
-        tempgrid = []
+        
+        
         for i in grid:
             opposite = [i[0][1], i[0][0]]
             for p in grid:
@@ -66,37 +66,41 @@ def find_path(atlas, alg):
                     grid.remove(p)
         print("Grid", grid)
         print("Backtrack", backtrack)
-        #print("Actual", Atlas.get_road_dist(atlas, grid[36][0][0], grid[36][0][1]))
-        queue = []
         
-        queue = []
+        
+        queue = grid
         pos = 0
-        
         ans = []
         cost = 0
         previous_move = []
         visited = [[0,0]]
         potential_moves = []
-        first = 0
-        prev = []
-        back = []
-        rev = []
+        reached = [0]
+        
         while pos != atlas._num_cities - 1:
+            potential_moves = []
+            
             i = 0
             # Sorting
-            while i < len(grid):
-                if grid[i][0][0] == pos and grid[i][0][0] not in visited:
-                    queue.append(grid[i])
+            while i < len(queue):
+                if queue[i][0][0] == pos:
+                    potential_moves.append(queue[i])
                 i = i + 1
+            if potential_moves == []:
+                print("Backtrack")
+                queue.pop(0)
             queue.sort(key = lambda x: x[1])
-            counter = 0
-
+            
+            
             print("Queue", queue)
             #print("Prev", prev)
             #print("TEST", [queue[0][0][0], queue[0][0][1]])
+            print("test", queue[0][0][0])
+            for i in queue:
+                if i[0][0] in reached:
+                    pos = queue[0][0][1]
+                    reached.append(pos)
             
-            if [queue[0][0][0], queue[0][0][1]] not in visited:
-                pos = queue[0][0][1]
             print(pos)
 
             x1 = visited[len(visited) - 1][0]
@@ -113,8 +117,8 @@ def find_path(atlas, alg):
             if [queue[0][0][0], queue[0][0][1]] not in visited:
                 visited.append([queue[0][0][0], queue[0][0][1]])
             #print("Visited", visited)
-            prev = queue
-            queue = []
+            queue.pop(0)
+            
     
         temp = []
         for i in ans:

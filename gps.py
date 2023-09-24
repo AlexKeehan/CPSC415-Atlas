@@ -76,48 +76,46 @@ def find_path(atlas, alg):
         visited = [[0,0]]
         potential_moves = []
         reached = [0]
-        
+        last_pos = 0
+        reached_queue = []
+        # Keep going until goal state
         while pos != atlas._num_cities - 1:
             potential_moves = []
             
             i = 0
-            # Sorting
+            # Sorting frontier
             while i < len(queue):
-                if queue[i][0][0] == pos:
+                if queue[i][0][0] in reached and queue[i][0] not in visited:
                     potential_moves.append(queue[i])
                 i = i + 1
             if potential_moves == []:
                 print("Backtrack")
+                pos = last_pos
                 queue.pop(0)
+            potential_moves.sort(key = lambda x: x[1])
             queue.sort(key = lambda x: x[1])
-            
-            
             print("Queue", queue)
-            #print("Prev", prev)
-            #print("TEST", [queue[0][0][0], queue[0][0][1]])
-            print("test", queue[0][0][0])
-            for i in queue:
-                if i[0][0] in reached:
-                    pos = queue[0][0][1]
-                    reached.append(pos)
+            print("Potential moves", potential_moves)
             
-            print(pos)
+            #print("TEST", [queue[0][0][0], queue[0][0][1]])
+            print("pos before", last_pos)
+            next_pos = potential_moves[0][0][0]
+            for i in potential_moves:
+                
+                if i[0][0] in reached:
+                    pos = potential_moves[0][0][1]
+                    last_pos = potential_moves[0][0][0]
+                    if pos not in reached:
+                        reached.append(pos)
+            print("Reached", reached)
+            print("Pos", pos)
 
-            x1 = visited[len(visited) - 1][0]
-            y1 = visited[len(visited) - 1][1]
-            x2 = visited[len(visited) - 2][0]
-            y2 = visited[len(visited) - 2][1]
-            x = [x1, y1]
-            y = [y2, x2]
-            if x != y:
-                cost = cost + queue[0][1]
-                ans.append(queue[0])
-            else:
-                back = y
-            if [queue[0][0][0], queue[0][0][1]] not in visited:
-                visited.append([queue[0][0][0], queue[0][0][1]])
+            cost = cost + potential_moves[0][1]
+            ans.append(potential_moves[0])
+            
+            if [potential_moves[0][0][0], potential_moves[0][0][1]] not in visited:
+                visited.append([potential_moves[0][0][0], potential_moves[0][0][1]])
             #print("Visited", visited)
-            queue.pop(0)
             
     
         temp = []
@@ -127,6 +125,7 @@ def find_path(atlas, alg):
             if i[0][1] not in temp:
                 temp.append(i[0][1])
         ans = temp
+        #print("ANS", ans)
         return (ans, cost)
 
     # Here's a (bogus) example return value:
@@ -135,7 +134,7 @@ def find_path(atlas, alg):
 
 
 if __name__ == '__main__':
-
+#
     if len(sys.argv) != 3:
         print("Usage: gps.py numCities|atlasFile algorithm.")
         sys.exit(1)

@@ -23,6 +23,7 @@ def find_path(atlas, alg):
 
     frontier = []
     grid = []
+    backtrack = []
 
     def Grid(self):
         x = 0
@@ -39,7 +40,8 @@ def find_path(atlas, alg):
             while x <= atlas._num_cities - 1:
                 y = 0
                 while y <= atlas._num_cities - 1:
-                    grid.append([[x,y], Atlas.get_crow_flies_dist(atlas, x, y)])
+                    if Atlas.get_road_dist(atlas, x, y) != float('Inf') and Atlas.get_road_dist(atlas, x, y) != 0.0:
+                        grid.append([[x,y], Atlas.get_crow_flies_dist(atlas, x, y)])
                     y = y + 1
                 x = x + 1
         if (alg == "A*"):
@@ -51,48 +53,52 @@ def find_path(atlas, alg):
                     y = y + 1
                 x = x + 1
     Grid(grid)
-    print(grid)
 
 
     if (alg == "greedy"):
         #print("Hueristic", Atlas.get_crow_flies_dist(atlas, grid[22][0][0], grid[22][0][1]))
-
+        tempgrid = []
+        for i in grid:
+            opposite = [i[0][1], i[0][0]]
+            for p in grid:
+                if p[0] == opposite:
+                    backtrack.append(p)
+                    grid.remove(p)
+        print("Grid", grid)
+        print("Backtrack", backtrack)
         #print("Actual", Atlas.get_road_dist(atlas, grid[36][0][0], grid[36][0][1]))
         queue = []
-
+        
         queue = []
         pos = 0
+        
         ans = []
         cost = 0
         previous_move = []
         visited = [[0,0]]
+        potential_moves = []
         first = 0
+        prev = []
+        back = []
+        rev = []
         while pos != atlas._num_cities - 1:
-            i = 1
+            i = 0
             # Sorting
-            while i < atlas._num_cities:
-                queue.append([[pos,i], grid[i][1]])
+            while i < len(grid):
+                if grid[i][0][0] == pos and grid[i][0][0] not in visited:
+                    queue.append(grid[i])
                 i = i + 1
             queue.sort(key = lambda x: x[1])
             counter = 0
-            temp_queue = []
-            # Finding ones that aren't Inf
-            while counter < len(queue):
-                #print("Queue", queue)
-                #print("TEST", queue[0][1])
-                dist = Atlas.get_road_dist(atlas, queue[counter][0][0], queue[counter][0][1])
-                index = [queue[counter][0][0], queue[counter][0][1]]
-                if dist != float('Inf') and dist != 0.0 and index not in visited:
-                    #print("Dist", dist)
-                    temp_queue.append([queue[counter][0], dist])
-                    #print(temp_queue)
-                counter = counter + 1
-            queue = temp_queue
-            queue.sort(key = lambda x: x[1])
-            #print("Sorted Queue", queue)
+
+            print("Queue", queue)
+            #print("Prev", prev)
+            #print("TEST", [queue[0][0][0], queue[0][0][1]])
             
-            if queue[0][0][1] not in visited:
+            if [queue[0][0][0], queue[0][0][1]] not in visited:
                 pos = queue[0][0][1]
+            print(pos)
+
             x1 = visited[len(visited) - 1][0]
             y1 = visited[len(visited) - 1][1]
             x2 = visited[len(visited) - 2][0]
@@ -102,9 +108,12 @@ def find_path(atlas, alg):
             if x != y:
                 cost = cost + queue[0][1]
                 ans.append(queue[0])
-            visited.append([queue[0][0][0], queue[0][0][1]])
+            else:
+                back = y
+            if [queue[0][0][0], queue[0][0][1]] not in visited:
+                visited.append([queue[0][0][0], queue[0][0][1]])
             #print("Visited", visited)
-            first = 1
+            prev = queue
             queue = []
     
         temp = []

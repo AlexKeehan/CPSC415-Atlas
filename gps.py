@@ -73,57 +73,58 @@ def find_path(atlas, alg):
 
 
     if (alg == "greedy"):
-        x = 0
-        y = 1
-        reached = [[]]
-                
-
-        #node = [0,0]
-        #frontier.append(node)
-        #reached.append(node)
         queue = []
         pos = 0
+        ans = []
+        cost = 0
+        previous_move = []
+        visited = [[0,0]]
         while pos != atlas._num_cities - 1:
             i = 1
-            while i < atlas._num_cities - 1:
+            # Sorting
+            while i < atlas._num_cities:
                 queue.append([[pos,i], grid[i][1]])
                 i = i + 1
             queue.sort(key = lambda x: x[1])
-            print("Queue", queue)
             counter = 0
             temp_queue = []
+            # Finding ones that aren't Inf
             while counter < len(queue):
                 dist = Atlas.get_road_dist(atlas, queue[counter][0][0], queue[counter][0][1])
-                if dist != float('Inf') and dist != 0.0:
+                index = [queue[counter][0][0], queue[counter][0][1]]
+                if dist != float('Inf') and dist != 0.0 and index not in visited:
                     temp_queue.append([queue[counter][0], dist])
-                    print("Dist", dist)
                 counter = counter + 1
-                queue.pop()
             queue = temp_queue
             queue.sort(key = lambda x: x[1])
-
-            pos = queue[0][0][1]
-                #Atlas.get_road_dist(atlas, 
-
-        #while not len(frontier) == 0:
-       #     delete(frontier)
-           # while x < atlas._num_cities:
-               # frontier.append([grid[x][0], grid[x][y]])
-               # x = x + 1
-
-
-        #for i in frontier:
-                #child = i
-                #if child[0][1] == atlas._num_cities - 1:
-                #    print("Nice", child[0][1])
-                #if child not in reached:
-                #    reached.append(child)
-                #    frontier.append(child)
-        
-        
+            print("Sorted Queue", queue)
+            
+            if queue[0][0][1] not in visited:
+                pos = queue[0][0][1]
+            x1 = visited[len(visited) - 1][0]
+            y1 = visited[len(visited) - 1][1]
+            x2 = visited[len(visited) - 2][0]
+            y2 = visited[len(visited) - 2][1]
+            x = [x1, y1]
+            y = [y2, x2]
+            if x != y:
+                cost = cost + queue[0][1]
+                ans.append(queue[0])
+            visited.append([queue[0][0][0], queue[0][0][1]])
+            print("Visited", visited)
+            queue = []
+    
+        temp = []
+        for i in ans:
+            if i[0][0] not in temp:
+                temp.append(i[0][0])
+            if i[0][1] not in temp:
+                temp.append(i[0][1])
+        ans = temp
+        return (ans, cost)
 
     # Here's a (bogus) example return value:
-    return ([0,3,2,4],970)
+    #return ([0,3,2,4],970)
 
 
 

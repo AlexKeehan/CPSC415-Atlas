@@ -24,24 +24,6 @@ def find_path(atlas, alg):
     frontier = []
     grid = []
 
-    def isEmpty(self):
-        if len(frontier) == 0:
-            return True
-        else:
-            return False
-
-    def delete(self):
-        index = 0
-        max_value = 0
-        for i in range(len(frontier)):
-            if frontier[i] < frontier[max_value]:
-                max_value = i
-        temp = frontier[max_value]
-        del frontier[max_value]
-        return temp
-
-    
-    
     def Grid(self):
         x = 0
         y = 0
@@ -73,12 +55,18 @@ def find_path(atlas, alg):
 
 
     if (alg == "greedy"):
+        #print("Hueristic", Atlas.get_crow_flies_dist(atlas, grid[22][0][0], grid[22][0][1]))
+
+        #print("Actual", Atlas.get_road_dist(atlas, grid[36][0][0], grid[36][0][1]))
+        queue = []
+
         queue = []
         pos = 0
         ans = []
         cost = 0
         previous_move = []
         visited = [[0,0]]
+        first = 0
         while pos != atlas._num_cities - 1:
             i = 1
             # Sorting
@@ -90,14 +78,18 @@ def find_path(atlas, alg):
             temp_queue = []
             # Finding ones that aren't Inf
             while counter < len(queue):
+                #print("Queue", queue)
+                #print("TEST", queue[0][1])
                 dist = Atlas.get_road_dist(atlas, queue[counter][0][0], queue[counter][0][1])
                 index = [queue[counter][0][0], queue[counter][0][1]]
                 if dist != float('Inf') and dist != 0.0 and index not in visited:
+                    #print("Dist", dist)
                     temp_queue.append([queue[counter][0], dist])
+                    #print(temp_queue)
                 counter = counter + 1
             queue = temp_queue
             queue.sort(key = lambda x: x[1])
-            print("Sorted Queue", queue)
+            #print("Sorted Queue", queue)
             
             if queue[0][0][1] not in visited:
                 pos = queue[0][0][1]
@@ -111,7 +103,8 @@ def find_path(atlas, alg):
                 cost = cost + queue[0][1]
                 ans.append(queue[0])
             visited.append([queue[0][0][0], queue[0][0][1]])
-            print("Visited", visited)
+            #print("Visited", visited)
+            first = 1
             queue = []
     
         temp = []

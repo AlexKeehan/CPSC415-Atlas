@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-import heapq
 '''
 CPSC 415 -- Homework #2 template
 Alexander Keehan, University of Mary Washington, Fall 2023
 '''
-
-from atlas import Atlas
-import numpy as np
 import sys
+from atlas import Atlas
 
 
 def find_path(atlas, alg):

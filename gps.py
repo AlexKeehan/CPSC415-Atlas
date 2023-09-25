@@ -20,118 +20,117 @@ def find_path(atlas, alg):
     optimal path between those two cities. The second is the total cost
     of that path.'''
    # THIS IS WHERE YOUR AMAZING CODE GOES
+    if alg == "greedy":
+        # Frontier stores the priority queue of nodes to go to next
+        frontier = []
+        # Visited stores the path taken to goal
+        visited = []
+        # neighbors stores the neighbors of an expanded node
+        neighbors = []
+        # Used to check if a node is used later on
+        total_neighbors = []
+        # Assign a node all their neighbors to check if they are used in the final path
+        neighbors_for_nodes = []
 
-    frontier = []
-    grid = []
-    backtrack = []
+        frontier.append(0)
+        # sort stores the sorted list that is used to populate the frontier
+        sort = []
+        # node is the node being expanded
+        node = 0
+        flag = 0
+        # Keep going until goal state is found
+        while node != atlas._num_cities - 1:
+            flag = 0
+            # Reseat sort and neighbors every round
+            sort = []
+            # Store neighbors in total_neighbors
+            total_neighbors.append(neighbors)
+            neighbors = []
 
-    def Grid(self):
-        x = 0
-        y = 0
-        if (alg == "Dijkstras"):
-            while x <= atlas._num_cities - 1:
-                y = 0
-                while y <= atlas._num_cities - 1:
-                    grid.append([[x,y], Atlas.get_road_dist(atlas, x, y)])
-                    y = y + 1
-                x = x + 1
-
-        if (alg == "greedy"):
-            while x <= atlas._num_cities - 1:
-                y = 0
-                while y <= atlas._num_cities - 1:
-                    if Atlas.get_road_dist(atlas, x, y) != float('Inf') and Atlas.get_road_dist(atlas, x, y) != 0.0:
-                        grid.append([[x,y], Atlas.get_crow_flies_dist(atlas, x, y)])
-                    y = y + 1
-                x = x + 1
-        if (alg == "A*"):
-            while x <= atlas._num_cities - 1:
-                y = 0
-                while y <= atlas._num_cities - 1:
-                    temp = Atlas.get_road_dist(atlas, x, y) + Atlas.get_crow_flies_dist(atlas, x, y)
-                    grid.append([[x,y], temp])
-                    y = y + 1
-                x = x + 1
-    Grid(grid)
-
-
-    if (alg == "greedy"):
+            node = frontier.pop(0)
         
-        
-        for i in grid:
-            opposite = [i[0][1], i[0][0]]
-            for p in grid:
-                if p[0] == opposite:
-                    backtrack.append(p)
-                    grid.remove(p)
-        print("Grid", grid)
-        print("Backtrack", backtrack)
-        
-        
-        queue = grid
-        pos = 0
-        ans = []
-        cost = 0
-        previous_move = []
-        visited = [[0,0]]
-        potential_moves = []
-        reached = [0]
-        last_pos = 0
-        reached_queue = []
-        # Keep going until goal state
-        while pos != atlas._num_cities - 1:
-            potential_moves = []
-            
-            i = 0
-            # Sorting frontier
-            while i < len(queue):
-                if queue[i][0][0] in reached and queue[i][0] not in visited:
-                    potential_moves.append(queue[i])
-                i = i + 1
-            if potential_moves == []:
-                print("Backtrack")
-                pos = last_pos
-                queue.pop(0)
-            potential_moves.sort(key = lambda x: x[1])
-            queue.sort(key = lambda x: x[1])
-            print("Queue", queue)
-            print("Potential moves", potential_moves)
-            
-            #print("TEST", [queue[0][0][0], queue[0][0][1]])
-            print("pos before", last_pos)
-            next_pos = potential_moves[0][0][0]
-            for i in potential_moves:
-                
-                if i[0][0] in reached:
-                    pos = potential_moves[0][0][1]
-                    last_pos = potential_moves[0][0][0]
-                    if pos not in reached:
-                        reached.append(pos)
-            print("Reached", reached)
-            print("Pos", pos)
+            counter = 0
+            # Get neighbors for node being expanded
+            while counter < atlas._num_cities:
+                dist = Atlas.get_road_dist(atlas, node, counter)
+                if dist != float('Inf') and counter not in visited and counter != node:
+                    neighbors.append(counter)
+                counter = counter + 1
+            neighbors_for_nodes.append([node, neighbors])
 
-            cost = cost + potential_moves[0][1]
-            ans.append(potential_moves[0])
-            
-            if [potential_moves[0][0][0], potential_moves[0][0][1]] not in visited:
-                visited.append([potential_moves[0][0][0], potential_moves[0][0][1]])
-            #print("Visited", visited)
-            
+            # Organize neighbors based on heuristic
+            for i in neighbors:
+                dist = Atlas.get_crow_flies_dist(atlas, atlas._num_cities - 1, i)
+                sort.append([i, dist])
+            # Add values from frontier back in to be sorted again
+            for i in frontier:
+                dist = Atlas.get_crow_flies_dist(atlas, atlas._num_cities - 1, i)
+                if [i, dist] not in sort:
+                    sort.append([i, dist])
+            # Sort all the neighbors and frontier by heuristic
+            sort.sort(key = lambda x: x[1])
+        
+            # Check to see if there are any new neighbors
+            for x in total_neighbors:
+                for y in neighbors:
+                    if y not in total_neighbors:
+                        flag = 0
+                        break;
+                    else:
+                        flag = 1
+
+            # Add node to path
+            if len(neighbors) != 0 and node not in visited and flag != 1:
+                visited.append(node)
     
-        temp = []
-        for i in ans:
-            if i[0][0] not in temp:
-                temp.append(i[0][0])
-            if i[0][1] not in temp:
-                temp.append(i[0][1])
-        ans = temp
-        #print("ANS", ans)
-        return (ans, cost)
+            # Reset frontier
+            frontier = []
 
-    # Here's a (bogus) example return value:
-    #return ([0,3,2,4],970)
+            # Add new sorted values to frontier
+            for i in sort:
+                if i[0] not in frontier:
+                    frontier.append(i[0])
 
+            # Check for goal state
+            if len(sort) > 0:
+                if sort[0][1] == 0.0:
+                    break;
 
+        temporary = []
+        # Check for unused nodes in visited
+        # Look for a nodes neighbors that are not being used by any other node in visited
+        # Indicates it should not be on the final path
+        for x in neighbors_for_nodes:
+            for y in visited:
+                if (y in x[1] and x[0] not in temporary) or atlas._num_cities - 1 in x[1] and x[0] not in temporary:
+                    temporary.append(x[0])
+    
+        visited = temporary
+        visited.append(atlas._num_cities - 1)
+        next_node = 1
+        curr_node = 0
+
+        # Check for infinite values in visited
+        while next_node < len(visited):
+            dist = Atlas.get_road_dist(atlas, visited[curr_node], visited[next_node])
+            if dist == float('Inf'):
+                del visited[curr_node]
+            curr_node = curr_node + 1
+            next_node = next_node + 1
+        # Add up the cost of visited to get the final cost
+        next_node = 1
+        curr_node = 0
+        cost = 0
+        while next_node < len(visited):
+            dist = Atlas.get_road_dist(atlas, visited[curr_node], visited[next_node])
+            cost = cost + dist
+            curr_node = curr_node + 1
+            next_node = next_node + 1
+        return (visited, cost)
+    elif alg == "Dijkstras":
+        return "Unimplemented"
+    elif alg == "A*":
+        return "Unimplemented"
 
 if __name__ == '__main__':
 #
